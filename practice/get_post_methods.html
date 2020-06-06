@@ -1,0 +1,42 @@
+<!--
+There are only possible methods for forms, either by the GET or POST HTTP request route.
+
+The POST submission
+On submit, we send off an HTTP POST request to the route /create with a request body
+The request body stringifies the key-value pairs of fields from the form (as part of the name attribute) along with their values.
+
+The GET submission
+Sends off a GET request with URL query parameters that appends the form data to the URL.
+Ideal for smaller form submissions.
+-->
+
+
+<!--
+With a POST method, POST /create:
+
+content-type: application/x-www-form-urlencoded
+
+request body: field1=value1&field2=value2
+
+the URL query parameters can be as long as 2048 characters.
+-->
+
+<form action="/create" method="post">
+  <div>
+    <label for="field">Field 1</label>
+    <input type="text" name="field1">
+  </div>
+  <div>
+    <label for="field">Field 2</label>
+    <input type="text" name="field2">
+  </div>
+  <div>
+    <input type="submit" id="submit" value="Create" />
+  </div>
+</form>
+
+<!--
+in comparison...it appends the form data directly to the url, so it is more suitable for shorter form submissions.
+
+With a GET method, GET/create?field1=value1&field2=value2
+-->
