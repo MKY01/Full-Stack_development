@@ -15,6 +15,7 @@ ALTER TABLE ADD COLUMN;
 from flask import Flask, render_template, request, redirect, url_for, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from jinja2 import *
 import sys
 
 app = Flask(__name__)
