@@ -37,17 +37,21 @@
         <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked 
         {% endif %} /> 
         {{ todo.description }}
+        <!--show a delete button-->
         <button class="delete-button" data-id="{{ todo.id }}">&cross;</button>
       </li>
       {% endfor %}
     </ul>
     <script>
       const deleteBtns = document.querySelectorAll('.delete-button');
+      //loop through every To-Do item
       for (let i = 0; i < deleteBtns.length; i++) {
         const btn = deleteBtns[i];
+        //pressing the delete button
         btn.onclick = function (e) {
           const todoId = e.target.dataset['id'];
           fetch('/todos/' + todoId, {
+            //delete the targeted item
             method: 'DELETE'
           })
           .then(function () {

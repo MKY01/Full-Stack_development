@@ -62,8 +62,10 @@ def set_completed_todo(todo_id):
         db.session.close()
     return redirect(url_for('index'))
 
+#implement the logic controller, take the user's input and notify models to delete the To-Do item
 @app.route('/todos/<todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
+    #try, except, finally code block similar to 'post' code block
     try:
         Todo.query.filter_by(id=todo_id).delete()
         db.session.commit()
@@ -71,6 +73,7 @@ def delete_todo(todo_id):
         db.session.rollback()
     finally:
         db.session.close()
+    #on success, it should return to the index (/) route
     return jsonify({'success': True})
 
 @app.route('/')
