@@ -74,7 +74,7 @@
         fetch('/todos/create', {
           method: 'POST',
           body: JSON.stringify({
-            'description': document.getElementById('description').value
+            'description': desc,
           }),
           headers: {
             'Content-Type': 'application/json'
@@ -85,22 +85,21 @@
         })
         .then(function(jsonResponse) {
           console.log(jsonResponse);
-          const liItem = document.createElement('LI');
+          const liItem = document.createElement('li');
           const checkbox = document.createElement('input');
           checkbox.className = 'check-completed';
           checkbox.type = 'checkbox';
-          check.setAttribute('data-id', jsonResponse.id);
+          checkbox.setAttribute('data-id', jsonResponse.id);
           liItem.appendChild(checkbox);
 
-          // liItem.innerHTML = jsonResponse['description'];
           const text = document.createTextNode(' ' + jsonResponse.description);
-          LiItem.appendChild(text);
+          liItem.appendChild(text);
 
           const deleteBtn = document.createElement('button');
           deleteBtn.className = 'delete-button';
           deleteBtn.setAttribute('data-id', jsonResponse.id);
           deleteBtn.innerHTML = '&cross;';
-          li.appendChild(deleteBtn);
+          liItem.appendChild(deleteBtn);
 
           document.getElementById('todos').appendChild(liItem);
           document.getElementById('error').className = 'hidden';
