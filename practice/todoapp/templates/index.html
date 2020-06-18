@@ -21,7 +21,8 @@
         <ul id="todos">
             {% for d in data %}
             <li>
-              <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked {% endif %} /> 
+              <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked 
+              {% endif %} /> 
               {{ d.description }}
               <button class="delete-button" data-id="{{ todo.id }}">&cross;</button>
             </li>
@@ -35,7 +36,11 @@
                 const todoId = e.target.dataset['id'];
                 fetch('/todos/' + todoId, {
                   method: 'DELETE'
-                });
+                })
+                .then(function () {
+                    const item = e.target.parentElement;
+                    item.remove();
+                })
               }
           const checkboxes = document.querySelectorAll('.check-completed');
           for (let i = 0; i < checkboxes.length; i++) {

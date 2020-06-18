@@ -1,14 +1,5 @@
 '''
-this file must be named 'app.py' or flask wont run!
-To run you will have to cd into the location of the flask app, then run it by the following terminal command:
-FLASK_APP=app.py FLASK_DEBUG=true flask run
-I have to manually create a PostgreSQL database by create todoapp
-then inserted some dummy data into the columns
-INSERT INTO todos (description) VALUES ('Do a thing 1');
-INSERT INTO todos (description) VALUES ('Do a thing 2');
-INSERT INTO todos (description) VALUES ('Do a thing 3');
-INSERT INTO todos (description) VALUES ('Do a thing 4');
-ALTER TABLE ADD COLUMN;
+My to do app
 '''
 
 
@@ -21,7 +12,6 @@ import sys
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres@localhost:5432/todoapp'
 db = SQLAlchemy(app)  #session_options={"expire_on_commit":False}
-
 migrate = Migrate(app, db)
 
 class Todo(db.Model):
@@ -33,15 +23,19 @@ class Todo(db.Model):
     def __repr__(self):
         return f'<Todo {self.id} {self.description}>'
 
+
+# By convention, we would write a POST endpoint to /todos for the create endpoint:@app.route('/todos', method=['POST'])
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
     error = False
     body = {}
     try:
         description = request.get_json()['description']
-        todo = Todo(description=description)
+        todo = Todo(description=description, completed=False)
         db.session.add(todo)
         db.session.commit()
+        body['id'] = todo.id
+        body['completed'] = todo.completed
         body['description'] = todo.description
     except:
         error = True
@@ -53,17 +47,6 @@ def create_todo():
         abort (400)
     else:
         return jsonify(body)
-
-@app.route('/todos/<todo_id>', methods=['DELETE'])
-def delete_todo(todo_id):
-    try:
-        Todo.query.filter_by(id=todo_id).delete()
-        db.session.commit()
-    except:
-        db.session.rollback()
-    finally:
-        db.session.close()
-    return jsonify({'success': True})
 
 @app.route('/todos/<todo_id>/set-completed', methods=['POST'])
 def set_completed_todo(todo_id):
@@ -79,6 +62,16 @@ def set_completed_todo(todo_id):
         db.session.close()
     return redirect(url_for('index'))
 
+@app.route('/todos/<todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    try:
+        Todo.query.filter_by(id=todo_id).delete()
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+    return jsonify({'success': True})
 
 @app.route('/')
 def index():
