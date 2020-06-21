@@ -11,6 +11,7 @@ import sys
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres@localhost:5432/todoapp'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)  #session_options={"expire_on_commit":False}
 migrate = Migrate(app, db)
 
@@ -19,10 +20,10 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
-    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=True)
+    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Todo {self.id} {self.description}>'
+        return f'<Todo {self.id} {self.description}, list {self.list_id}>'
 
 
 class TodoList(db.Model):
