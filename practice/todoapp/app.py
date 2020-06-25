@@ -23,7 +23,7 @@ class Todo(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Todo {self.id} {self.description}, list {self.list_id}>'
+        return f'<Todo ID: {self.id}, description: {self.description}, complete: list {self.complete}>'
 
 
 class TodoList(db.Model):
@@ -32,6 +32,9 @@ class TodoList(db.Model):
     name = db.Column(db.String(), nullable=False)
     todos = db.relationship('Todo', backref='list', lazy=True)
 
+    def __repr__(self):
+        return f'<TodoList ID: {self.id}, name: {self.name}, todos: {self.todos}>'
+
 # By convention, we would write a POST endpoint to /todos for the create endpoint:@app.route('/todos', method=['POST'])
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
@@ -39,6 +42,7 @@ def create_todo():
     body = {}
     try:
         description = request.get_json()['description']
+        list_id = request.get_json()['list_id']
         todo = Todo(description=description, completed=False)
         db.session.add(todo)
         db.session.commit()
@@ -58,6 +62,7 @@ def create_todo():
 
 @app.route('/todos/<todo_id>/set-completed', methods=['POST'])
 def set_completed_todo(todo_id):
+    error = False
     try:
         completed = request.get_json()['completed']
         print('completed', completed)
@@ -66,9 +71,16 @@ def set_completed_todo(todo_id):
         db.session.commit()
     except:
         db.session.rollback()
-    finally:
-        db.session.close()
-    return redirect(url_for('index'))
+        error = True
+    if error:
+        abort(500)
+    else:
+        return '', 200
+
+
+@app.route('/')
+def index():
+    return redirect(url_for('get_list_todos', list_id=1))
 
 #implement the logic controller, take the user's input and notify models to delete the To-Do item
 @app.route('/todos/<todo_id>', methods=['DELETE'])
@@ -93,6 +105,6 @@ def get_list_todos(list_id):
     .all()
 )
 
-@app.route('/')
-def index():
-    return redirect(url_for('get_list_todos', list_id=1))
+
+if __name__ == '__main__':
+    app.run(debug=True)
